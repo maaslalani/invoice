@@ -1,6 +1,6 @@
-# Invoice
-
 <img src="https://github.com/maaslalani/invoice/assets/42545625/f7dec601-54e5-4058-ad4c-8ef715eedfba" />
+
+# Invoice
 
 Generate invoices from the command line.
 
