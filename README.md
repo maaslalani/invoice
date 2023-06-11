@@ -7,8 +7,13 @@ Generate invoices from the command line.
 ## Text-based User Interface
 
 ```bash
-invoice generate
+invoice generate --from "Dream, Inc." --to "Imagine, Inc." \
+    --item "Rubber Duck" --quantity 2 --rate 25 \
+    --tax 0.13 --discount 0.15 \
+    --note "For debugging purposes."
 ```
+
+<img src="https://vhs.charm.sh/vhs-66CMd4UQuXkuxX9djHUnGX.gif" width="600" />
 
 View the generated PDF at `invoice.pdf`, you can customize the output location
 with `--output`.
@@ -19,28 +24,6 @@ open invoice.pdf
 
 <img width="574" alt="invoice-preview" src="https://github.com/maaslalani/invoice/assets/42545625/e02d1e29-f0c7-431c-b183-c9beaab1ac44">
 
-## Command Line Interface
-
-```bash
-# Generate an invoice from information.
-invoice generate --title "Invoice" \
-    --id 2 \
-    --logo ./images/logo.png \
-    --from "Dream, Inc." \
-    --to "Imagine, Inc." \
-    --date "June 10, 2023" \
-    --due "June 30, 2023" \
-    --tax 0.13 \
-    --discount 0.15 \
-    --currency USD \
-    --item "Rubber Duck" \
-    --quantity 2 \
-    --rate 25 \
-    --notes "For debugging purposes."
-```
-
-<img src="https://vhs.charm.sh/vhs-66CMd4UQuXkuxX9djHUnGX.gif" width="600" />
-
 Save repeated information with environment variables:
 
 ```bash
@@ -50,7 +33,6 @@ export INVOICE_TO="Imagine, Inc."
 export INVOICE_TAX=0.13
 export INVOICE_RATE=25
 ```
-
 
 Generate new invoice:
 
