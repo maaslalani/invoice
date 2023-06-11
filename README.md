@@ -1,11 +1,20 @@
 # Invoice
 
+<img src="https://github.com/maaslalani/invoice/assets/42545625/f7dec601-54e5-4058-ad4c-8ef715eedfba" />
+
 Generate invoices from the command line.
 
 ## Text-based User Interface
 
 ```bash
-invoice
+invoice generate
+```
+
+View the generated PDF at `invoice.pdf`, you can customize the output location
+with `--output`.
+
+```bash
+open invoice.pdf
 ```
 
 ## Command Line Interface
@@ -28,6 +37,8 @@ invoice generate --title "Invoice" \
     --notes "For debugging purposes."
 ```
 
+<img src="https://vhs.charm.sh/vhs-66CMd4UQuXkuxX9djHUnGX.gif" width="600" />
+
 Save repeated information with environment variables:
 
 ```bash
@@ -45,6 +56,7 @@ invoice generate \
     --item "Yellow Rubber Duck" --quantity 5 \
     --item "Special Edition Plaid Rubber Duck" --quantity 1 \
     --notes "For debugging purposes."
+    --output duck-invoice.pdf
 ```
 
 ## Installation

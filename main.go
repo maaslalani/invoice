@@ -3,7 +3,9 @@ package main
 import (
 	_ "embed"
 	"flag"
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/signintech/gopdf"
@@ -103,7 +105,16 @@ var generateCmd = &cobra.Command{
 		writeNotes(&pdf, note)
 		writeTotals(&pdf, subtotal, subtotal*tax, subtotal*discount)
 		writeFooter(&pdf, id)
-		return pdf.WritePdf(output)
+		output = strings.TrimSuffix(output, ".pdf") + ".pdf"
+		err = pdf.WritePdf(output)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Generated %s\n", output)
+
+		return nil
+
 	},
 }
 
