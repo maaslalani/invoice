@@ -1,4 +1,4 @@
-<img src="https://github.com/maaslalani/invoice/assets/42545625/f7dec601-54e5-4058-ad4c-8ef715eedfba" />
+<img width="1200" alt="invoice" src="https://github.com/maaslalani/invoice/assets/42545625/a719e38e-0721-4c4b-9224-b6bc58de0edf">
 
 # Invoice
 
@@ -16,6 +16,8 @@ with `--output`.
 ```bash
 open invoice.pdf
 ```
+
+<img width="574" alt="invoice-preview" src="https://github.com/maaslalani/invoice/assets/42545625/e02d1e29-f0c7-431c-b183-c9beaab1ac44">
 
 ## Command Line Interface
 
@@ -48,6 +50,7 @@ export INVOICE_TO="Imagine, Inc."
 export INVOICE_TAX=0.13
 export INVOICE_RATE=25
 ```
+
 
 Generate new invoice:
 
