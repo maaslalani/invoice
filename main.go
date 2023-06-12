@@ -54,11 +54,11 @@ func init() {
 	generateCmd.Flags().StringVar(&date, "date", time.Now().Format("Jan 02, 2006"), "Date")
 	generateCmd.Flags().StringVar(&due, "due", time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"), "Payment due date")
 
-	generateCmd.Flags().Float64Var(&tax, "tax", 0.13, "Tax")
+	generateCmd.Flags().Float64Var(&tax, "tax", 0.0, "Tax")
 	generateCmd.Flags().Float64VarP(&discount, "discount", "d", 0.0, "Discount")
 	generateCmd.Flags().StringVarP(&currency, "currency", "c", "USD", "Currency")
 
-	generateCmd.Flags().StringVarP(&note, "note", "n", "For debugging purposes.", "Note")
+	generateCmd.Flags().StringVarP(&note, "note", "n", "", "Note")
 	generateCmd.Flags().StringVarP(&output, "output", "o", "invoice.pdf", "Output file (.pdf)")
 
 	flag.Parse()
@@ -122,7 +122,6 @@ var generateCmd = &cobra.Command{
 		fmt.Printf("Generated %s\n", output)
 
 		return nil
-
 	},
 }
 
