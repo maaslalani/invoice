@@ -110,7 +110,9 @@ var generateCmd = &cobra.Command{
 			writeRow(&pdf, items[i], q, r)
 			subtotal += float64(q) * r
 		}
-		writeNotes(&pdf, note)
+		if note != "" {
+			writeNotes(&pdf, note)
+		}
 		writeTotals(&pdf, subtotal, subtotal*tax, subtotal*discount)
 		writeFooter(&pdf, id)
 		output = strings.TrimSuffix(output, ".pdf") + ".pdf"
