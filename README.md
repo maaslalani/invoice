@@ -4,7 +4,7 @@
 
 Generate invoices from the command line.
 
-## Text-based User Interface
+## Command Line Interface
 
 ```bash
 invoice generate --from "Dream, Inc." --to "Imagine, Inc." \
