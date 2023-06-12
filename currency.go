@@ -9,4 +9,5 @@ var currencySymbols = map[string]string{
 	"INR": "₹",
 	"RUB": "₽",
 	"KRW": "₩",
+	"BRL": "R$",
 }
