@@ -15,6 +15,9 @@ import (
 //go:embed Inter.ttf
 var interFont []byte
 
+//go:embed Inter-Bold.ttf
+var interBoldFont []byte
+
 var (
 	id    string
 	title string
@@ -79,6 +82,11 @@ var generateCmd = &cobra.Command{
 		pdf.SetMargins(40, 40, 40, 40)
 		pdf.AddPage()
 		err := pdf.AddTTFFontData("Inter", interFont)
+		if err != nil {
+			return err
+		}
+
+		err = pdf.AddTTFFontData("Inter-Bold", interBoldFont)
 		if err != nil {
 			return err
 		}
