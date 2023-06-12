@@ -32,7 +32,7 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 }
 
 func writeTitle(pdf *gopdf.GoPdf, title, id string) {
-	_ = pdf.SetFont("Inter", "", 24)
+	_ = pdf.SetFont("Inter-Bold", "", 24)
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.Cell(nil, title)
 	pdf.Br(36)
@@ -129,6 +129,9 @@ func writeTotal(pdf *gopdf.GoPdf, label string, total float64) {
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.SetFontSize(12)
 	pdf.SetX(amountColumnOffset - 15)
+	if label == totalLabel {
+		_ = pdf.SetFont("Inter-Bold", "", 11.5)
+	}
 	_ = pdf.Cell(nil, currencySymbols[currency]+strconv.FormatFloat(total, 'f', 2, 64))
 	pdf.Br(24)
 }
