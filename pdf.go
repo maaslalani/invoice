@@ -6,9 +6,11 @@ import (
 	"github.com/signintech/gopdf"
 )
 
-const quantityColumnOffset = 360
-const rateColumnOffset = 405
-const amountColumnOffset = 480
+const (
+	quantityColumnOffset = 360
+	rateColumnOffset     = 405
+	amountColumnOffset   = 480
+)
 
 const (
 	subtotalLabel = "Subtotal"
@@ -23,7 +25,7 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 		pdf.Br(64)
 	}
 	_ = pdf.SetFont("Inter", "", 12)
-	pdf.SetTextColor(155, 155, 155)
+	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, from)
 	pdf.Br(36)
 	pdf.SetStrokeColor(225, 225, 225)
@@ -37,19 +39,19 @@ func writeTitle(pdf *gopdf.GoPdf, title, id string) {
 	_ = pdf.Cell(nil, title)
 	pdf.Br(36)
 	_ = pdf.SetFont("Inter", "", 12)
-	pdf.SetTextColor(225, 225, 225)
+	pdf.SetTextColor(100, 100, 100)
 	_ = pdf.Cell(nil, "#")
-	pdf.SetTextColor(175, 175, 175)
+	pdf.SetTextColor(100, 100, 100)
 	_ = pdf.Cell(nil, id)
 	pdf.Br(48)
 }
 
 func writeBillTo(pdf *gopdf.GoPdf, to string) {
-	pdf.SetTextColor(200, 200, 200)
+	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 9)
 	_ = pdf.Cell(nil, "BILL TO")
 	pdf.Br(14)
-	pdf.SetTextColor(175, 175, 175)
+	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 15)
 	_ = pdf.Cell(nil, to)
 	pdf.Br(64)
@@ -57,7 +59,7 @@ func writeBillTo(pdf *gopdf.GoPdf, to string) {
 
 func writeHeaderRow(pdf *gopdf.GoPdf) {
 	_ = pdf.SetFont("Inter", "", 9)
-	pdf.SetTextColor(175, 175, 175)
+	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, "ITEM")
 	pdf.SetX(quantityColumnOffset)
 	_ = pdf.Cell(nil, "QTY")
@@ -72,7 +74,7 @@ func writeNotes(pdf *gopdf.GoPdf, notes string) {
 	pdf.SetY(650)
 
 	_ = pdf.SetFont("Inter", "", 10)
-	pdf.SetTextColor(155, 155, 155)
+	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, "Notes")
 	pdf.Br(18)
 	pdf.SetTextColor(0, 0, 0)
@@ -84,7 +86,7 @@ func writeFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.SetY(800)
 
 	_ = pdf.SetFont("Inter", "", 10)
-	pdf.SetTextColor(155, 155, 155)
+	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, id)
 	pdf.SetStrokeColor(225, 225, 225)
 	pdf.Line(pdf.GetX()+10, pdf.GetY()+6, 550, pdf.GetY()+6)
@@ -123,7 +125,7 @@ func writeTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, discount float
 
 func writeTotal(pdf *gopdf.GoPdf, label string, total float64) {
 	_ = pdf.SetFont("Inter", "", 9)
-	pdf.SetTextColor(175, 175, 175)
+	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset)
 	_ = pdf.Cell(nil, label)
 	pdf.SetTextColor(0, 0, 0)
