@@ -1,4 +1,4 @@
-<img width="1200" alt="Invoice" src="https://github.com/maaslalani/nap/assets/42545625/219a0d4e-431e-498a-8db0-31815923350d">
+<img width="1200" alt="Invoice" src="https://github.com/maaslalani/invoice/assets/42545625/f643ea3a-96ab-434f-bedb-29b173297f8f">
 
 # Invoice
 
@@ -22,7 +22,7 @@ with `--output`.
 open invoice.pdf
 ```
 
-<img width="574" alt="Example Invoice" src="https://github.com/maaslalani/nap/assets/42545625/39611668-06f8-470f-b42e-d3dc98e4bea6">
+<img width="574" alt="Example Invoice" src="https://github.com/maaslalani/invoice/assets/42545625/ecb5841a-3698-42ed-97e5-679381cd5db1">
 
 Save repeated information with environment variables:
 
