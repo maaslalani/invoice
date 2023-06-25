@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"image"
+	"os"
 	"strconv"
 
 	"github.com/signintech/gopdf"
@@ -21,8 +24,11 @@ const (
 
 func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	if logo != "" {
-		_ = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: 44, H: 44})
-		pdf.Br(64)
+		width, height := getImageDimension(logo)
+		scaledWidth := 100.0
+		scaledHeight := float64(height) * scaledWidth / float64(width)
+		_ = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
+		pdf.Br(scaledHeight + 24)
 	}
 	_ = pdf.SetFont("Inter", "", 12)
 	pdf.SetTextColor(55, 55, 55)
@@ -136,4 +142,18 @@ func writeTotal(pdf *gopdf.GoPdf, label string, total float64) {
 	}
 	_ = pdf.Cell(nil, currencySymbols[currency]+strconv.FormatFloat(total, 'f', 2, 64))
 	pdf.Br(24)
+}
+
+func getImageDimension(imagePath string) (int, int) {
+	file, err := os.Open(imagePath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+	}
+	defer file.Close()
+
+	image, _, err := image.DecodeConfig(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: %v\n", imagePath, err)
+	}
+	return image.Width, image.Height
 }
