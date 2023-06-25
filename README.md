@@ -44,6 +44,14 @@ invoice generate \
     --output duck-invoice.pdf
 ```
 
+### Custom Templates
+
+If you would like a custom invoice template for your business or company, please
+reach out via:
+
+* [Email](mailto:maas@lalani.dev)
+* [Twitter](https://twitter.com/maaslalani)
+
 ## Installation
 
 <!--
@@ -80,7 +88,7 @@ Or download a binary from the [releases](https://github.com/maaslalani/invoice/r
 I'd love to hear your feedback on improving `invoice`.
 
 Feel free to reach out via:
-* [Email](mailto:maas@lalani.dev) 
+* [Email](mailto:maas@lalani.dev)
 * [Twitter](https://twitter.com/maaslalani)
 * [GitHub issues](https://github.com/maaslalani/invoice/issues/new)
 
