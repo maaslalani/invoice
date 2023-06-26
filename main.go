@@ -19,7 +19,7 @@ var interFont []byte
 //go:embed Inter-Bold.ttf
 var interBoldFont []byte
 
-type invoiceData struct {
+type Invoice struct {
 	Id    string `json:"id" yaml:"id"`
 	Title string `json:"title" yaml:"title"`
 
@@ -40,35 +40,53 @@ type invoiceData struct {
 	Note string `json:"note" yaml:"note"`
 }
 
+func DefaultInvoice() Invoice {
+	return Invoice{
+		Id:         time.Now().Format("20060102"),
+		Title:      "INVOICE",
+		Rates:      []float64{25},
+		Quantities: []int{2},
+		Items:      []string{"Paper Cranes"},
+		From:       "Project Folded, Inc.",
+		To:         "Untitled Corporation, Inc.",
+		Date:       time.Now().Format("Jan 02, 2006"),
+		Due:        time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
+		Tax:        0,
+		Discount:   0,
+		Currency:   "USD",
+	}
+}
+
 var (
-	importPath string
-	output     string
-	file       invoiceData
+	importPath     string
+	output         string
+	file           = Invoice{}
+	defaultInvoice = DefaultInvoice()
 )
 
 func init() {
 	viper.AutomaticEnv()
 
-	generateCmd.Flags().StringVar(&file.Id, "id", time.Now().Format("20060102"), "ID")
-	generateCmd.Flags().StringVar(&file.Title, "title", "INVOICE", "Title")
+	generateCmd.Flags().StringVar(&file.Id, "id", defaultInvoice.Id, "ID")
+	generateCmd.Flags().StringVar(&file.Title, "title", defaultInvoice.Title, "Title")
 
-	generateCmd.Flags().Float64SliceVarP(&file.Rates, "rate", "r", []float64{25}, "Rates")
-	generateCmd.Flags().IntSliceVarP(&file.Quantities, "quantity", "q", []int{2}, "Quantities")
-	generateCmd.Flags().StringSliceVarP(&file.Items, "item", "i", []string{"Paper Cranes"}, "Items")
+	generateCmd.Flags().Float64SliceVarP(&file.Rates, "rate", "r", defaultInvoice.Rates, "Rates")
+	generateCmd.Flags().IntSliceVarP(&file.Quantities, "quantity", "q", defaultInvoice.Quantities, "Quantities")
+	generateCmd.Flags().StringSliceVarP(&file.Items, "item", "i", defaultInvoice.Items, "Items")
 
-	generateCmd.Flags().StringVarP(&file.Logo, "logo", "l", "", "Company logo")
-	generateCmd.Flags().StringVarP(&file.From, "from", "f", "Project Folded, Inc.", "Issuing company")
-	generateCmd.Flags().StringVarP(&file.To, "to", "t", "Untitled Corporation, Inc.", "Recipient company")
-	generateCmd.Flags().StringVar(&file.Date, "date", time.Now().Format("Jan 02, 2006"), "Date")
-	generateCmd.Flags().StringVar(&file.Due, "due", time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"), "Payment due date")
+	generateCmd.Flags().StringVarP(&file.Logo, "logo", "l", defaultInvoice.Logo, "Company logo")
+	generateCmd.Flags().StringVarP(&file.From, "from", "f", defaultInvoice.From, "Issuing company")
+	generateCmd.Flags().StringVarP(&file.To, "to", "t", defaultInvoice.To, "Recipient company")
+	generateCmd.Flags().StringVar(&file.Date, "date", defaultInvoice.Date, "Date")
+	generateCmd.Flags().StringVar(&file.Due, "due", defaultInvoice.Due, "Payment due date")
 
-	generateCmd.Flags().Float64Var(&file.Tax, "tax", 0, "Tax")
-	generateCmd.Flags().Float64VarP(&file.Discount, "discount", "d", 0.0, "Discount")
-	generateCmd.Flags().StringVarP(&file.Currency, "currency", "c", "USD", "Currency")
+	generateCmd.Flags().Float64Var(&file.Tax, "tax", defaultInvoice.Tax, "Tax")
+	generateCmd.Flags().Float64VarP(&file.Discount, "discount", "d", defaultInvoice.Discount, "Discount")
+	generateCmd.Flags().StringVarP(&file.Currency, "currency", "c", defaultInvoice.Currency, "Currency")
 
 	generateCmd.Flags().StringVarP(&file.Note, "note", "n", "", "Note")
 	generateCmd.Flags().StringVarP(&output, "output", "o", "invoice.pdf", "Output file (.pdf)")
-	generateCmd.Flags().StringVar(&importPath, "import", "", "Imported file (.json/.yaml)")
+	generateCmd.Flags().StringVar(&importPath, "import", "", "Seed JSON / YAML file")
 
 	flag.Parse()
 }
@@ -84,67 +102,67 @@ var generateCmd = &cobra.Command{
 	Short: "Generate an invoice",
 	Long:  `Generate an invoice`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+
 		if importPath != "" {
 			err := importData(importPath, &file)
 			if err != nil {
-				return err
+				fmt.Println(err)
 			}
 		}
-		return createPdf()
+
+		pdf := gopdf.GoPdf{}
+		pdf.Start(gopdf.Config{
+			PageSize: *gopdf.PageSizeA4,
+		})
+		pdf.SetMargins(40, 40, 40, 40)
+		pdf.AddPage()
+		err := pdf.AddTTFFontData("Inter", interFont)
+		if err != nil {
+			return err
+		}
+
+		err = pdf.AddTTFFontData("Inter-Bold", interBoldFont)
+		if err != nil {
+			return err
+		}
+
+		writeLogo(&pdf, file.Logo, file.From)
+		writeTitle(&pdf, file.Title, file.Id, file.Date)
+		writeBillTo(&pdf, file.To)
+		writeHeaderRow(&pdf)
+		subtotal := 0.0
+		for i := range file.Items {
+			q := 1
+			if len(file.Quantities) > i {
+				q = file.Quantities[i]
+			}
+
+			r := 0.0
+			if len(file.Rates) > i {
+				r = file.Rates[i]
+			}
+
+			writeRow(&pdf, file.Items[i], q, r)
+			subtotal += float64(q) * r
+		}
+		if file.Note != "" {
+			writeNotes(&pdf, file.Note)
+		}
+		writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
+		if file.Due != "" {
+			writeDueDate(&pdf, file.Due)
+		}
+		writeFooter(&pdf, file.Id)
+		output = strings.TrimSuffix(output, ".pdf") + ".pdf"
+		err = pdf.WritePdf(output)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Generated %s\n", output)
+
+		return nil
 	},
-}
-
-func createPdf() error {
-	pdf := gopdf.GoPdf{}
-	pdf.Start(gopdf.Config{
-		PageSize: *gopdf.PageSizeA4,
-	})
-	pdf.SetMargins(40, 40, 40, 40)
-	pdf.AddPage()
-	err := pdf.AddTTFFontData("Inter", interFont)
-	if err != nil {
-		return err
-	}
-
-	err = pdf.AddTTFFontData("Inter-Bold", interBoldFont)
-	if err != nil {
-		return err
-	}
-
-	writeLogo(&pdf, file.Logo, file.From)
-	writeTitle(&pdf, file.Title, file.Id)
-	writeBillTo(&pdf, file.To)
-	writeHeaderRow(&pdf)
-	subtotal := 0.0
-	for i := range file.Items {
-		q := 1
-		if len(file.Quantities) > i {
-			q = file.Quantities[i]
-		}
-
-		r := 0.0
-		if len(file.Rates) > i {
-			r = file.Rates[i]
-		}
-
-		writeRow(&pdf, file.Items[i], q, r)
-		subtotal += float64(q) * r
-	}
-	if file.Note != "" {
-		writeNotes(&pdf, file.Note)
-	}
-	writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
-	writeFooter(&pdf, file.Id)
-	output = strings.TrimSuffix(output, ".pdf") + ".pdf"
-	err = pdf.WritePdf(output)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("Generated %s\n", output)
-
-	return nil
-
 }
 
 func main() {
