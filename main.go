@@ -95,8 +95,7 @@ var generateCmd = &cobra.Command{
 		}
 
 		writeLogo(&pdf, logo, from)
-		writeTitle(&pdf, title, id)
-		writeDates(&pdf, date, due)
+		writeTitle(&pdf, title, id, date)
 		writeBillTo(&pdf, to)
 		writeHeaderRow(&pdf)
 		subtotal := 0.0
@@ -118,6 +117,9 @@ var generateCmd = &cobra.Command{
 			writeNotes(&pdf, note)
 		}
 		writeTotals(&pdf, subtotal, subtotal*tax, subtotal*discount)
+		if due != "" {
+			writeDueDate(&pdf, due)
+		}
 		writeFooter(&pdf, id)
 		output = strings.TrimSuffix(output, ".pdf") + ".pdf"
 		err = pdf.WritePdf(output)

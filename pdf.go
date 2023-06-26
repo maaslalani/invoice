@@ -39,7 +39,7 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	pdf.Br(36)
 }
 
-func writeTitle(pdf *gopdf.GoPdf, title, id string) {
+func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
 	_ = pdf.SetFont("Inter-Bold", "", 24)
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.Cell(nil, title)
@@ -47,27 +47,31 @@ func writeTitle(pdf *gopdf.GoPdf, title, id string) {
 	_ = pdf.SetFont("Inter", "", 12)
 	pdf.SetTextColor(100, 100, 100)
 	_ = pdf.Cell(nil, "#")
-	pdf.SetTextColor(100, 100, 100)
 	_ = pdf.Cell(nil, id)
-	pdf.Br(24)
+	pdf.SetTextColor(150, 150, 150)
+	_ = pdf.Cell(nil, "  ·  ")
+	pdf.SetTextColor(100, 100, 100)
+	_ = pdf.Cell(nil, date)
+	pdf.Br(36)
 }
 
-func writeDates(pdf *gopdf.GoPdf, date, due string) {
-	_ = pdf.SetFont("Inter", "", 10)
-	pdf.SetTextColor(100, 100, 100)
-	_ = pdf.Cell(nil, "Invoice Date: "+date)
+func writeDueDate(pdf *gopdf.GoPdf, due string) {
+	_ = pdf.SetFont("Inter", "", 9)
+	pdf.SetTextColor(75, 75, 75)
+	pdf.SetX(rateColumnOffset)
+	_ = pdf.Cell(nil, "Due Date")
+	pdf.SetTextColor(0, 0, 0)
+	_ = pdf.SetFontSize(11)
+	pdf.SetX(amountColumnOffset - 15)
+	_ = pdf.Cell(nil, due)
 	pdf.Br(12)
-	_ = pdf.SetFont("Inter", "", 10)
-	pdf.SetTextColor(100, 100, 100)
-	_ = pdf.Cell(nil, "Due Date: "+due)
-	pdf.Br(48)
 }
 
 func writeBillTo(pdf *gopdf.GoPdf, to string) {
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 9)
 	_ = pdf.Cell(nil, "BILL TO")
-	pdf.Br(14)
+	pdf.Br(18)
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 15)
 	_ = pdf.Cell(nil, to)
