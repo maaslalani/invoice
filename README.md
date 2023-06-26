@@ -40,7 +40,7 @@ Generate new invoice:
 invoice generate \
     --item "Yellow Rubber Duck" --quantity 5 \
     --item "Special Edition Plaid Rubber Duck" --quantity 1 \
-    --notes "For debugging purposes."
+    --note "For debugging purposes." \
     --output duck-invoice.pdf
 ```
 
