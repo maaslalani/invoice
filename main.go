@@ -96,6 +96,7 @@ var generateCmd = &cobra.Command{
 
 		writeLogo(&pdf, logo, from)
 		writeTitle(&pdf, title, id)
+		writeDates(&pdf, date, due)
 		writeBillTo(&pdf, to)
 		writeHeaderRow(&pdf)
 		subtotal := 0.0
@@ -127,7 +128,6 @@ var generateCmd = &cobra.Command{
 		fmt.Printf("Generated %s\n", output)
 
 		return nil
-
 	},
 }
 
