@@ -3,31 +3,19 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
-	"strings"
 
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 )
 
-<<<<<<< HEAD
-func importData(path string, structure *Invoice) error {
-=======
-func importData(path string, structure *invoiceData, flags *pflag.FlagSet) error {
->>>>>>> 7357642 (Data flags override imported files again)
+func importData(path string, structure *Invoice, flags *pflag.FlagSet) error {
 	fileText, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("unable to read file")
 	}
 
-<<<<<<< HEAD
-	if strings.HasSuffix(path, ".json") {
-		return importJson(fileText, structure)
-	}
-
-	if strings.HasSuffix(path, ".yaml") || strings.HasSuffix(path, ".yml") {
-		return importYaml(fileText, structure)
-=======
 	var b []byte
 	var byteBuffer [][]byte
 	flags.Visit(func(f *pflag.Flag) {
@@ -50,7 +38,6 @@ func importData(path string, structure *invoiceData, flags *pflag.FlagSet) error
 	}
 	if err != nil {
 		log.Fatal(err)
->>>>>>> 7357642 (Data flags override imported files again)
 	}
 
 	for _, bytes := range byteBuffer {

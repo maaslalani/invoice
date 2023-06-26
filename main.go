@@ -67,14 +67,9 @@ var (
 func init() {
 	viper.AutomaticEnv()
 
-<<<<<<< HEAD
-	generateCmd.Flags().StringVar(&file.Id, "id", defaultInvoice.Id, "ID")
-	generateCmd.Flags().StringVar(&file.Title, "title", defaultInvoice.Title, "Title")
-=======
 	generateCmd.Flags().StringVar(&importPath, "import", "", "Imported file (.json/.yaml)")
 	generateCmd.Flags().StringVar(&file.Id, "id", time.Now().Format("20060102"), "ID")
 	generateCmd.Flags().StringVar(&file.Title, "title", "INVOICE", "Title")
->>>>>>> 7357642 (Data flags override imported files again)
 
 	generateCmd.Flags().Float64SliceVarP(&file.Rates, "rate", "r", defaultInvoice.Rates, "Rates")
 	generateCmd.Flags().IntSliceVarP(&file.Quantities, "quantity", "q", defaultInvoice.Quantities, "Quantities")
@@ -92,10 +87,6 @@ func init() {
 
 	generateCmd.Flags().StringVarP(&file.Note, "note", "n", "", "Note")
 	generateCmd.Flags().StringVarP(&output, "output", "o", "invoice.pdf", "Output file (.pdf)")
-<<<<<<< HEAD
-	generateCmd.Flags().StringVar(&importPath, "import", "", "Seed JSON / YAML file")
-=======
->>>>>>> 7357642 (Data flags override imported files again)
 
 	flag.Parse()
 }
