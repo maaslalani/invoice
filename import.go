@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
@@ -27,10 +28,9 @@ func importData(path string, structure *Invoice, flags *pflag.FlagSet) error {
 		byteBuffer = append(byteBuffer, b)
 	})
 
-	length := len(path)
-	if path[length-5:] == ".json" {
+	if strings.HasSuffix(path, ".json") {
 		err = importJson(fileText, structure)
-	} else if path[length-5:] == ".yaml" || path[length-4:] == ".yml" {
+	} else if strings.HasSuffix(path, ".yaml") || strings.HasSuffix(path, ".yml") {
 		err = importYaml(fileText, structure)
 
 	} else {
