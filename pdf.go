@@ -52,7 +52,7 @@ func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
 	_ = pdf.Cell(nil, "  ·  ")
 	pdf.SetTextColor(100, 100, 100)
 	_ = pdf.Cell(nil, date)
-	pdf.Br(36)
+	pdf.Br(48)
 }
 
 func writeDueDate(pdf *gopdf.GoPdf, due string) {
