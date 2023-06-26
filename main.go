@@ -10,6 +10,7 @@ import (
 
 	"github.com/signintech/gopdf"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 //go:embed Inter.ttf
@@ -41,6 +42,8 @@ var (
 )
 
 func init() {
+	viper.AutomaticEnv()
+
 	generateCmd.Flags().StringVar(&id, "id", time.Now().Format("20060102"), "ID")
 	generateCmd.Flags().StringVar(&title, "title", "INVOICE", "Title")
 
