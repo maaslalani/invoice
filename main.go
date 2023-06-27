@@ -106,7 +106,7 @@ var generateCmd = &cobra.Command{
 		if importPath != "" {
 			err := importData(importPath, &file, cmd.Flags())
 			if err != nil {
-				fmt.Println(err)
+				return err
 			}
 		}
 
