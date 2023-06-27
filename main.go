@@ -19,49 +19,73 @@ var interFont []byte
 //go:embed Inter-Bold.ttf
 var interBoldFont []byte
 
+type Invoice struct {
+	Id    string `json:"id" yaml:"id"`
+	Title string `json:"title" yaml:"title"`
+
+	Logo string `json:"logo" yaml:"logo"`
+	From string `json:"from" yaml:"from"`
+	To   string `json:"to" yaml:"to"`
+	Date string `json:"date" yaml:"date"`
+	Due  string `json:"due" yaml:"due"`
+
+	Items      []string  `json:"items" yaml:"items"`
+	Quantities []int     `json:"quantities" yaml:"quantities"`
+	Rates      []float64 `json:"rates" yaml:"rates"`
+
+	Tax      float64 `json:"tax" yaml:"tax"`
+	Discount float64 `json:"discount" yaml:"discount"`
+	Currency string  `json:"currency" yaml:"currency"`
+
+	Note string `json:"note" yaml:"note"`
+}
+
+func DefaultInvoice() Invoice {
+	return Invoice{
+		Id:         time.Now().Format("20060102"),
+		Title:      "INVOICE",
+		Rates:      []float64{25},
+		Quantities: []int{2},
+		Items:      []string{"Paper Cranes"},
+		From:       "Project Folded, Inc.",
+		To:         "Untitled Corporation, Inc.",
+		Date:       time.Now().Format("Jan 02, 2006"),
+		Due:        time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
+		Tax:        0,
+		Discount:   0,
+		Currency:   "USD",
+	}
+}
+
 var (
-	id    string
-	title string
-
-	logo string
-	from string
-	to   string
-	date string
-	due  string
-
-	items      []string
-	quantities []int
-	rates      []float64
-
-	tax      float64
-	discount float64
-	currency string
-
-	note   string
-	output string
+	importPath     string
+	output         string
+	file           = Invoice{}
+	defaultInvoice = DefaultInvoice()
 )
 
 func init() {
 	viper.AutomaticEnv()
 
-	generateCmd.Flags().StringVar(&id, "id", time.Now().Format("20060102"), "ID")
-	generateCmd.Flags().StringVar(&title, "title", "INVOICE", "Title")
+	generateCmd.Flags().StringVar(&importPath, "import", "", "Imported file (.json/.yaml)")
+	generateCmd.Flags().StringVar(&file.Id, "id", time.Now().Format("20060102"), "ID")
+	generateCmd.Flags().StringVar(&file.Title, "title", "INVOICE", "Title")
 
-	generateCmd.Flags().Float64SliceVarP(&rates, "rate", "r", []float64{25}, "Rates")
-	generateCmd.Flags().IntSliceVarP(&quantities, "quantity", "q", []int{2}, "Quantities")
-	generateCmd.Flags().StringSliceVarP(&items, "item", "i", []string{"Paper Cranes"}, "Items")
+	generateCmd.Flags().Float64SliceVarP(&file.Rates, "rate", "r", defaultInvoice.Rates, "Rates")
+	generateCmd.Flags().IntSliceVarP(&file.Quantities, "quantity", "q", defaultInvoice.Quantities, "Quantities")
+	generateCmd.Flags().StringSliceVarP(&file.Items, "item", "i", defaultInvoice.Items, "Items")
 
-	generateCmd.Flags().StringVarP(&logo, "logo", "l", "", "Company logo")
-	generateCmd.Flags().StringVarP(&from, "from", "f", "Project Folded, Inc.", "Issuing company")
-	generateCmd.Flags().StringVarP(&to, "to", "t", "Untitled Corporation, Inc.", "Recipient company")
-	generateCmd.Flags().StringVar(&date, "date", time.Now().Format("Jan 02, 2006"), "Date")
-	generateCmd.Flags().StringVar(&due, "due", time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"), "Payment due date")
+	generateCmd.Flags().StringVarP(&file.Logo, "logo", "l", defaultInvoice.Logo, "Company logo")
+	generateCmd.Flags().StringVarP(&file.From, "from", "f", defaultInvoice.From, "Issuing company")
+	generateCmd.Flags().StringVarP(&file.To, "to", "t", defaultInvoice.To, "Recipient company")
+	generateCmd.Flags().StringVar(&file.Date, "date", defaultInvoice.Date, "Date")
+	generateCmd.Flags().StringVar(&file.Due, "due", defaultInvoice.Due, "Payment due date")
 
-	generateCmd.Flags().Float64Var(&tax, "tax", 0, "Tax")
-	generateCmd.Flags().Float64VarP(&discount, "discount", "d", 0.0, "Discount")
-	generateCmd.Flags().StringVarP(&currency, "currency", "c", "USD", "Currency")
+	generateCmd.Flags().Float64Var(&file.Tax, "tax", defaultInvoice.Tax, "Tax")
+	generateCmd.Flags().Float64VarP(&file.Discount, "discount", "d", defaultInvoice.Discount, "Discount")
+	generateCmd.Flags().StringVarP(&file.Currency, "currency", "c", defaultInvoice.Currency, "Currency")
 
-	generateCmd.Flags().StringVarP(&note, "note", "n", "", "Note")
+	generateCmd.Flags().StringVarP(&file.Note, "note", "n", "", "Note")
 	generateCmd.Flags().StringVarP(&output, "output", "o", "invoice.pdf", "Output file (.pdf)")
 
 	flag.Parse()
@@ -78,6 +102,14 @@ var generateCmd = &cobra.Command{
 	Short: "Generate an invoice",
 	Long:  `Generate an invoice`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		if importPath != "" {
+			err := importData(importPath, &file, cmd.Flags())
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
 		pdf := gopdf.GoPdf{}
 		pdf.Start(gopdf.Config{
 			PageSize: *gopdf.PageSizeA4,
@@ -94,33 +126,33 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		writeLogo(&pdf, logo, from)
-		writeTitle(&pdf, title, id, date)
-		writeBillTo(&pdf, to)
+		writeLogo(&pdf, file.Logo, file.From)
+		writeTitle(&pdf, file.Title, file.Id, file.Date)
+		writeBillTo(&pdf, file.To)
 		writeHeaderRow(&pdf)
 		subtotal := 0.0
-		for i := range items {
+		for i := range file.Items {
 			q := 1
-			if len(quantities) > i {
-				q = quantities[i]
+			if len(file.Quantities) > i {
+				q = file.Quantities[i]
 			}
 
 			r := 0.0
-			if len(rates) > i {
-				r = rates[i]
+			if len(file.Rates) > i {
+				r = file.Rates[i]
 			}
 
-			writeRow(&pdf, items[i], q, r)
+			writeRow(&pdf, file.Items[i], q, r)
 			subtotal += float64(q) * r
 		}
-		if note != "" {
-			writeNotes(&pdf, note)
+		if file.Note != "" {
+			writeNotes(&pdf, file.Note)
 		}
-		writeTotals(&pdf, subtotal, subtotal*tax, subtotal*discount)
-		if due != "" {
-			writeDueDate(&pdf, due)
+		writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
+		if file.Due != "" {
+			writeDueDate(&pdf, file.Due)
 		}
-		writeFooter(&pdf, id)
+		writeFooter(&pdf, file.Id)
 		output = strings.TrimSuffix(output, ".pdf") + ".pdf"
 		err = pdf.WritePdf(output)
 		if err != nil {

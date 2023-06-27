@@ -24,7 +24,7 @@ open invoice.pdf
 
 <img width="574" alt="Example invoice" src="https://github.com/maaslalani/nap/assets/42545625/13153de2-dfa1-41e6-a18e-4d3a5cea5b74">
 
-Save repeated information with environment variables:
+Save repeated information with environment variables or in an overridable JSON file:
 
 ```bash
 export INVOICE_LOGO=/path/to/image.png
@@ -32,6 +32,16 @@ export INVOICE_FROM="Dream, Inc."
 export INVOICE_TO="Imagine, Inc."
 export INVOICE_TAX=0.13
 export INVOICE_RATE=25
+```
+
+```json
+{
+	"logo": "/path/to/image.png",
+	"from": "Dream, Inc.",
+	"to": "Imagine, Inc.",
+	"tax": 0.13,
+	"rates": 25
+}
 ```
 
 Generate new invoice:
@@ -42,6 +52,9 @@ invoice generate \
     --item "Special Edition Plaid Rubber Duck" --quantity 1 \
     --note "For debugging purposes." \
     --output duck-invoice.pdf
+```
+```bash
+invoice generate --import path/to/data.json --output duck-invoice.pdf
 ```
 
 ### Custom Templates
