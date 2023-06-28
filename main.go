@@ -13,10 +13,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-//go:embed Inter.ttf
+//go:embed "Inter/Inter Variable/Inter.ttf"
 var interFont []byte
 
-//go:embed Inter-Bold.ttf
+//go:embed "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf"
 var interBoldFont []byte
 
 type Invoice struct {
