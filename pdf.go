@@ -5,6 +5,7 @@ import (
 	"image"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/signintech/gopdf"
 )
@@ -98,11 +99,18 @@ func writeNotes(pdf *gopdf.GoPdf, notes string) {
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, "Notes")
 	pdf.Br(18)
+	_ = pdf.SetFont("Inter", "", 8)
 	pdf.SetTextColor(0, 0, 0)
-	_ = pdf.Cell(nil, notes)
+
+	notesLines := strings.Split(notes, "\\n")
+
+	for i := 0; i < len(notesLines); i++ {
+		_ = pdf.Cell(nil, notesLines[i])
+		pdf.Br(15)
+	}
+
 	pdf.Br(48)
 }
-
 func writeFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.SetY(800)
 
