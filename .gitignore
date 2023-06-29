@@ -2,3 +2,4 @@
 *.json
 *.yaml
 *.yml
+!.github/workflows/*.yml
