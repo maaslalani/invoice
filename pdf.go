@@ -102,7 +102,8 @@ func writeNotes(pdf *gopdf.GoPdf, notes string) {
 	_ = pdf.SetFont("Inter", "", 8)
 	pdf.SetTextColor(0, 0, 0)
 
-	notesLines := strings.Split(notes, "\\n")
+	formattedNotes := strings.ReplaceAll(notes, `\n`, "\n")
+	notesLines := strings.Split(formattedNotes, "\\n")
 
 	for i := 0; i < len(notesLines); i++ {
 		_ = pdf.Cell(nil, notesLines[i])
