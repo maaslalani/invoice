@@ -56,7 +56,9 @@ Or, save repeated information with JSON / YAML:
     "from": "Dream, Inc.",
     "to": "Imagine, Inc.",
     "tax": 0.13,
-    "rates": 25
+    "items": ["Yellow Rubber Duck", "Special Edition Plaid Rubber Duck"],
+    "quantities": [5, 1],
+    "rates": [25, 25],
 }
 ```
 
