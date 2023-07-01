@@ -2,15 +2,17 @@ package main
 
 import (
 	_ "embed"
-	"flag"
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/signintech/gopdf"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed "Inter/Inter Variable/Inter.ttf"
@@ -87,8 +89,6 @@ func init() {
 
 	generateCmd.Flags().StringVarP(&file.Note, "note", "n", "", "Note")
 	generateCmd.Flags().StringVarP(&output, "output", "o", "invoice.pdf", "Output file (.pdf)")
-
-	flag.Parse()
 }
 
 var rootCmd = &cobra.Command{
@@ -104,11 +104,27 @@ var generateCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		if importPath != "" {
-			err := importData(importPath, &file, cmd.Flags())
+			f, err := os.Open(importPath)
 			if err != nil {
 				return err
 			}
+			defer f.Close()
+
+			if strings.HasSuffix(importPath, ".json") {
+				if err = json.NewDecoder(f).Decode(&file); err != nil {
+					return err
+				}
+			} else if strings.HasSuffix(importPath, ".yaml") && strings.HasSuffix(importPath, ".yml") {
+				if err = yaml.NewDecoder(f).Decode(&file); err != nil {
+					return err
+				}
+			} else {
+				return fmt.Errorf("unsupported file extension. supported extensions are .json, .yaml, .yml")
+			}
 		}
+
+		// supplied flags override the imported file
+		cmd.Flags().Parse(os.Args[1:])
 
 		pdf := gopdf.GoPdf{}
 		pdf.Start(gopdf.Config{
