@@ -23,11 +23,13 @@ type Invoice struct {
 	Id    string `json:"id" yaml:"id"`
 	Title string `json:"title" yaml:"title"`
 
-	Logo string `json:"logo" yaml:"logo"`
-	From string `json:"from" yaml:"from"`
-	To   string `json:"to" yaml:"to"`
-	Date string `json:"date" yaml:"date"`
-	Due  string `json:"due" yaml:"due"`
+	Logo        string   `json:"logo" yaml:"logo"`
+	From        string   `json:"from" yaml:"from"`
+	FromAddress []string `json:"from_address" yaml:"from_address"`
+	To          string   `json:"to" yaml:"to"`
+	ToAddress   []string `json:"to_address" yaml:"to_address"`
+	Date        string   `json:"date" yaml:"date"`
+	Due         string   `json:"due" yaml:"due"`
 
 	Items      []string  `json:"items" yaml:"items"`
 	Quantities []int     `json:"quantities" yaml:"quantities"`
@@ -42,18 +44,20 @@ type Invoice struct {
 
 func DefaultInvoice() Invoice {
 	return Invoice{
-		Id:         time.Now().Format("20060102"),
-		Title:      "INVOICE",
-		Rates:      []float64{25},
-		Quantities: []int{2},
-		Items:      []string{"Paper Cranes"},
-		From:       "Project Folded, Inc.",
-		To:         "Untitled Corporation, Inc.",
-		Date:       time.Now().Format("Jan 02, 2006"),
-		Due:        time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
-		Tax:        0,
-		Discount:   0,
-		Currency:   "USD",
+		Id:          time.Now().Format("20060102"),
+		Title:       "INVOICE",
+		Rates:       []float64{25},
+		Quantities:  []int{2},
+		Items:       []string{"Paper Cranes"},
+		From:        "Project Folded, Inc.",
+		FromAddress: []string{"1", "Main st", "Newyark", "626112"},
+		To:          "Untitled Corporation, Inc.",
+		ToAddress:   []string{"1/56A", "Main st", "Newyark", "626112"},
+		Date:        time.Now().Format("Jan 02, 2006"),
+		Due:         time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
+		Tax:         0,
+		Discount:    0,
+		Currency:    "USD",
 	}
 }
 
@@ -77,7 +81,9 @@ func init() {
 
 	generateCmd.Flags().StringVarP(&file.Logo, "logo", "l", defaultInvoice.Logo, "Company logo")
 	generateCmd.Flags().StringVarP(&file.From, "from", "f", defaultInvoice.From, "Issuing company")
+	generateCmd.Flags().StringSliceVarP(&file.FromAddress, "from-address", "s", defaultInvoice.FromAddress, "Issuing company address")
 	generateCmd.Flags().StringVarP(&file.To, "to", "t", defaultInvoice.To, "Recipient company")
+	generateCmd.Flags().StringSliceVarP(&file.ToAddress, "to-address", "a", defaultInvoice.ToAddress, "Receiving company address")
 	generateCmd.Flags().StringVar(&file.Date, "date", defaultInvoice.Date, "Date")
 	generateCmd.Flags().StringVar(&file.Due, "due", defaultInvoice.Due, "Payment due date")
 
@@ -126,9 +132,9 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		writeLogo(&pdf, file.Logo, file.From)
+		writeLogo(&pdf, file.Logo, file.From, file.FromAddress)
 		writeTitle(&pdf, file.Title, file.Id, file.Date)
-		writeBillTo(&pdf, file.To)
+		writeBillTo(&pdf, file.To, file.ToAddress)
 		writeHeaderRow(&pdf)
 		subtotal := 0.0
 		for i := range file.Items {
