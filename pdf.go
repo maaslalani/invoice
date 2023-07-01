@@ -23,7 +23,8 @@ const (
 	totalLabel    = "Total"
 )
 
-func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
+func writeLogo(pdf *gopdf.GoPdf,
+	logo string, from string, fromAddress []string) {
 	if logo != "" {
 		width, height := getImageDimension(logo)
 		scaledWidth := 100.0
@@ -34,6 +35,15 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	_ = pdf.SetFont("Inter", "", 12)
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, from)
+	pdf.Br(18)
+	rectangle := gopdf.Rect{
+		W: 100.0,
+		H: 45.0,
+	}
+	for _, v := range fromAddress {
+		_ = pdf.Cell(&rectangle, v)
+		pdf.Br(18)
+	}
 	pdf.Br(36)
 	pdf.SetStrokeColor(225, 225, 225)
 	pdf.Line(pdf.GetX(), pdf.GetY(), 100, pdf.GetY())
@@ -68,7 +78,8 @@ func writeDueDate(pdf *gopdf.GoPdf, due string) {
 	pdf.Br(12)
 }
 
-func writeBillTo(pdf *gopdf.GoPdf, to string) {
+func writeBillTo(pdf *gopdf.GoPdf,
+	to string, toAddress []string) {
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 9)
 	_ = pdf.Cell(nil, "BILL TO")
@@ -76,6 +87,15 @@ func writeBillTo(pdf *gopdf.GoPdf, to string) {
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 15)
 	_ = pdf.Cell(nil, to)
+	pdf.Br(18)
+	rectangle := gopdf.Rect{
+		W: 100.0,
+		H: 45.0,
+	}
+	for _, v := range toAddress {
+		_ = pdf.Cell(&rectangle, v)
+		pdf.Br(18)
+	}
 	pdf.Br(64)
 }
 
