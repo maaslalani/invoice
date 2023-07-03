@@ -114,7 +114,7 @@ var generateCmd = &cobra.Command{
 				if err = json.NewDecoder(f).Decode(&file); err != nil {
 					return err
 				}
-			} else if strings.HasSuffix(importPath, ".yaml") && strings.HasSuffix(importPath, ".yml") {
+			} else if strings.HasSuffix(importPath, ".yaml") || strings.HasSuffix(importPath, ".yml") {
 				if err = yaml.NewDecoder(f).Decode(&file); err != nil {
 					return err
 				}
