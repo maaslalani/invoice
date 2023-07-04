@@ -1,4 +1,4 @@
-package main
+package utils
 
 var currencySymbols = map[string]string{
 	"USD": "$",

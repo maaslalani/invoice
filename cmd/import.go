@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"encoding/json"
@@ -7,11 +7,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/maaslalani/invoice/utils"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 )
 
-func importData(path string, structure *Invoice, flags *pflag.FlagSet) error {
+func importData(path string, structure *utils.Invoice, flags *pflag.FlagSet) error {
 	fileText, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("unable to read file")
@@ -50,7 +51,7 @@ func importData(path string, structure *Invoice, flags *pflag.FlagSet) error {
 	return err
 }
 
-func importJson(text []byte, structure *Invoice) error {
+func importJson(text []byte, structure *utils.Invoice) error {
 	if !json.Valid(text) {
 		return fmt.Errorf("json file not correctly formatted")
 	}
@@ -63,7 +64,7 @@ func importJson(text []byte, structure *Invoice) error {
 	return nil
 }
 
-func importYaml(text []byte, structure *Invoice) error {
+func importYaml(text []byte, structure *utils.Invoice) error {
 	err := yaml.Unmarshal(text, structure)
 	if err != nil {
 		return fmt.Errorf("yaml file not correctly formatted")
