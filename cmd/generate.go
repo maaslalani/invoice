@@ -55,7 +55,7 @@ var generateCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		if importPath != "" {
-			err := importData(importPath, &file, cmd.Flags())
+			err := utils.ImportData(importPath, &file, cmd.Flags())
 			if err != nil {
 				return err
 			}
