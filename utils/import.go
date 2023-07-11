@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func importData(path string, structure *Invoice, flags *pflag.FlagSet) error {
+func ImportData(path string, structure *Invoice, flags *pflag.FlagSet) error {
 	fileText, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("unable to read file")
