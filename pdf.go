@@ -23,6 +23,19 @@ const (
 	totalLabel    = "Total"
 )
 
+func writeAddress(pdf *gopdf.GoPdf,
+	fromAddress []string) {
+	pdf.Br(18)
+	rectangle := gopdf.Rect{
+		W: 100.0,
+		H: 45.0,
+	}
+	for _, v := range fromAddress {
+		_ = pdf.Cell(&rectangle, v)
+		pdf.Br(18)
+	}
+}
+
 func writeLogo(pdf *gopdf.GoPdf,
 	logo string, from string, fromAddress []string) {
 	if logo != "" {
@@ -35,15 +48,8 @@ func writeLogo(pdf *gopdf.GoPdf,
 	_ = pdf.SetFont("Inter", "", 12)
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, from)
-	pdf.Br(18)
-	rectangle := gopdf.Rect{
-		W: 100.0,
-		H: 45.0,
-	}
-	for _, v := range fromAddress {
-		_ = pdf.Cell(&rectangle, v)
-		pdf.Br(18)
-	}
+	// write address
+	writeAddress(pdf, fromAddress)
 	pdf.Br(36)
 	pdf.SetStrokeColor(225, 225, 225)
 	pdf.Line(pdf.GetX(), pdf.GetY(), 100, pdf.GetY())
