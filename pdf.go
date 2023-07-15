@@ -93,15 +93,7 @@ func writeBillTo(pdf *gopdf.GoPdf,
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 15)
 	_ = pdf.Cell(nil, to)
-	pdf.Br(18)
-	rectangle := gopdf.Rect{
-		W: 100.0,
-		H: 45.0,
-	}
-	for _, v := range toAddress {
-		_ = pdf.Cell(&rectangle, v)
-		pdf.Br(18)
-	}
+	writeAddress(pdf, toAddress)
 	pdf.Br(64)
 }
 
