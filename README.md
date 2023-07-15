@@ -24,7 +24,23 @@ with `--output`.
 open invoice.pdf
 ```
 
+
+#### address 
+To use an address which includes special separators like `,` 
+enclose the text using a single quote `"` 
+
+
+must be provided to cli as below 
+
+`--from-address '"1865 N Charlotte st",Suite32,"Nothaman, SN 02317"`
+
+`--to-address "135 Wehawken St.,\"Raleigh, NC 34217\""`
+
+
+
 <img width="574" alt="Example invoice" src="https://github.com/maaslalani/nap/assets/42545625/13153de2-dfa1-41e6-a18e-4d3a5cea5b74">
+
+
 
 ### Environment
 
