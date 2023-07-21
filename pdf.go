@@ -23,7 +23,7 @@ const (
 	totalLabel    = "Total"
 )
 
-func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
+func writeLogo(pdf *gopdf.GoPdf, logo, from, details string) {
 	if logo != "" {
 		width, height := getImageDimension(logo)
 		scaledWidth := 100.0
@@ -31,9 +31,23 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 		_ = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
 		pdf.Br(scaledHeight + 24)
 	}
-	_ = pdf.SetFont("Inter", "", 12)
+	_ = pdf.SetFont("Inter-Bold", "", 15)
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, from)
+
+	if details != "" {
+		pdf.Br(25)
+		_ = pdf.SetFont("Inter", "", 10)
+		pdf.SetTextColor(95, 95, 95)
+		lines := strings.Split(details, "\n")
+		for i, line := range lines {
+			_ = pdf.Cell(nil, line)
+			if i == len(lines) -1 {
+				continue
+			}
+			pdf.Br(11)
+		}
+	}
 	pdf.Br(36)
 	pdf.SetStrokeColor(225, 225, 225)
 	pdf.Line(pdf.GetX(), pdf.GetY(), 100, pdf.GetY())
@@ -112,6 +126,7 @@ func writeNotes(pdf *gopdf.GoPdf, notes string) {
 
 	pdf.Br(48)
 }
+
 func writeFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.SetY(800)
 

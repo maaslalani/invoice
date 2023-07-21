@@ -32,7 +32,6 @@ func importData(path string, structure *Invoice, flags *pflag.FlagSet) error {
 		err = importJson(fileText, structure)
 	} else if strings.HasSuffix(path, ".yaml") || strings.HasSuffix(path, ".yml") {
 		err = importYaml(fileText, structure)
-
 	} else {
 		return fmt.Errorf("unsupported file type")
 	}
