@@ -10,5 +10,5 @@ var currencySymbols = map[string]string{
 	"RUB": "₽",
 	"KRW": "₩",
 	"BRL": "R$",
-	"SGD": "SGD$"
+	"SGD": "SGD$",
 }
