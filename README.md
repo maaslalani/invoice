@@ -8,6 +8,8 @@ Generate invoices from the command line.
 
 ```bash
 invoice generate --from "Dream, Inc." --to "Imagine, Inc." \
+    --from-address "1 main road,newyark,567 999" \
+    --to-address "234/4566 second-main street,washington,568 9899" \
     --item "Rubber Duck" --quantity 2 --rate 25 \
     --tax 0.13 --discount 0.15 \
     --note "For debugging purposes."
@@ -22,7 +24,23 @@ with `--output`.
 open invoice.pdf
 ```
 
+
+#### address 
+To use an address which includes special separators like `,` 
+enclose the text using a single quote `"` 
+
+
+must be provided to cli as below 
+
+`--from-address '"1865 N Charlotte st",Suite32,"Nothaman, SN 02317"`
+
+`--to-address "135 Wehawken St.,\"Raleigh, NC 34217\""`
+
+
+
 <img width="574" alt="Example invoice" src="https://github.com/maaslalani/nap/assets/42545625/13153de2-dfa1-41e6-a18e-4d3a5cea5b74">
+
+
 
 ### Environment
 
@@ -54,6 +72,8 @@ Or, save repeated information with JSON / YAML:
 {
     "logo": "/path/to/image.png",
     "from": "Dream, Inc.",
+    "from_address": "1 main road,newyark,567 8989",
+    "to_address": "345/66 main-second street,washington,699-090",
     "to": "Imagine, Inc.",
     "tax": 0.13,
     "items": ["Yellow Rubber Duck", "Special Edition Plaid Rubber Duck"],
