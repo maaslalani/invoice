@@ -87,14 +87,16 @@ Use a package manager:
 # macOS
 brew install invoice
 
-# Arch
-yay -S invoice
-
 # Nix
 nix-env -iA nixpkgs.invoice
 ```
 
 -->
+
+Install from the AUR (Arch Linux):
+```sh
+yay -S invoice # -git, -bin
+```
 
 Install with Go:
 
