@@ -23,11 +23,12 @@ type Invoice struct {
 	Id    string `json:"id" yaml:"id"`
 	Title string `json:"title" yaml:"title"`
 
-	Logo string `json:"logo" yaml:"logo"`
-	From string `json:"from" yaml:"from"`
-	To   string `json:"to" yaml:"to"`
-	Date string `json:"date" yaml:"date"`
-	Due  string `json:"due" yaml:"due"`
+	Logo    string `json:"logo" yaml:"logo"`
+	Details string `json:"details" yaml:"details"`
+	From    string `json:"from" yaml:"from"`
+	To      string `json:"to" yaml:"to"`
+	Date    string `json:"date" yaml:"date"`
+	Due     string `json:"due" yaml:"due"`
 
 	Items      []string  `json:"items" yaml:"items"`
 	Quantities []int     `json:"quantities" yaml:"quantities"`
@@ -76,6 +77,7 @@ func init() {
 	generateCmd.Flags().StringSliceVarP(&file.Items, "item", "i", defaultInvoice.Items, "Items")
 
 	generateCmd.Flags().StringVarP(&file.Logo, "logo", "l", defaultInvoice.Logo, "Company logo")
+	generateCmd.Flags().StringVar(&file.Details, "details", defaultInvoice.Logo, "Company details (address, phone number, etc)")
 	generateCmd.Flags().StringVarP(&file.From, "from", "f", defaultInvoice.From, "Issuing company")
 	generateCmd.Flags().StringVarP(&file.To, "to", "t", defaultInvoice.To, "Recipient company")
 	generateCmd.Flags().StringVar(&file.Date, "date", defaultInvoice.Date, "Date")
@@ -102,7 +104,6 @@ var generateCmd = &cobra.Command{
 	Short: "Generate an invoice",
 	Long:  `Generate an invoice`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if importPath != "" {
 			err := importData(importPath, &file, cmd.Flags())
 			if err != nil {
@@ -126,7 +127,7 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		writeLogo(&pdf, file.Logo, file.From)
+		writeLogo(&pdf, file.Logo, file.From, file.Details)
 		writeTitle(&pdf, file.Title, file.Id, file.Date)
 		writeBillTo(&pdf, file.To)
 		writeHeaderRow(&pdf)
