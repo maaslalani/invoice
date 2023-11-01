@@ -102,7 +102,7 @@ var generateCmd = &cobra.Command{
 	Short: "Generate an invoice",
 	Long:  `Generate an invoice`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-
+		// Read CLI params / JSON config into 'file'
 		if importPath != "" {
 			err := importData(importPath, &file, cmd.Flags())
 			if err != nil {
@@ -110,59 +110,68 @@ var generateCmd = &cobra.Command{
 			}
 		}
 
-		pdf := gopdf.GoPdf{}
-		pdf.Start(gopdf.Config{
-			PageSize: *gopdf.PageSizeA4,
-		})
-		pdf.SetMargins(40, 40, 40, 40)
-		pdf.AddPage()
-		err := pdf.AddTTFFontData("Inter", interFont)
+		err := GenerateInvoice(file)
 		if err != nil {
 			return err
 		}
-
-		err = pdf.AddTTFFontData("Inter-Bold", interBoldFont)
-		if err != nil {
-			return err
-		}
-
-		writeLogo(&pdf, file.Logo, file.From)
-		writeTitle(&pdf, file.Title, file.Id, file.Date)
-		writeBillTo(&pdf, file.To)
-		writeHeaderRow(&pdf)
-		subtotal := 0.0
-		for i := range file.Items {
-			q := 1
-			if len(file.Quantities) > i {
-				q = file.Quantities[i]
-			}
-
-			r := 0.0
-			if len(file.Rates) > i {
-				r = file.Rates[i]
-			}
-
-			writeRow(&pdf, file.Items[i], q, r)
-			subtotal += float64(q) * r
-		}
-		if file.Note != "" {
-			writeNotes(&pdf, file.Note)
-		}
-		writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
-		if file.Due != "" {
-			writeDueDate(&pdf, file.Due)
-		}
-		writeFooter(&pdf, file.Id)
-		output = strings.TrimSuffix(output, ".pdf") + ".pdf"
-		err = pdf.WritePdf(output)
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("Generated %s\n", output)
 
 		return nil
 	},
+}
+
+func GenerateInvoice(file Invoice) (err error) {
+	pdf := gopdf.GoPdf{}
+	pdf.Start(gopdf.Config{
+		PageSize: *gopdf.PageSizeA4,
+	})
+	pdf.SetMargins(40, 40, 40, 40)
+	pdf.AddPage()
+	err = pdf.AddTTFFontData("Inter", interFont)
+	if err != nil {
+		return err
+	}
+
+	err = pdf.AddTTFFontData("Inter-Bold", interBoldFont)
+	if err != nil {
+		return err
+	}
+
+	writeLogo(&pdf, file.Logo, file.From)
+	writeTitle(&pdf, file.Title, file.Id, file.Date)
+	writeBillTo(&pdf, file.To)
+	writeHeaderRow(&pdf)
+	subtotal := 0.0
+	for i := range file.Items {
+		q := 1
+		if len(file.Quantities) > i {
+			q = file.Quantities[i]
+		}
+
+		r := 0.0
+		if len(file.Rates) > i {
+			r = file.Rates[i]
+		}
+
+		writeRow(&pdf, file.Items[i], q, r)
+		subtotal += float64(q) * r
+	}
+	if file.Note != "" {
+		writeNotes(&pdf, file.Note)
+	}
+	writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
+	if file.Due != "" {
+		writeDueDate(&pdf, file.Due)
+	}
+	writeFooter(&pdf, file.Id)
+	output = strings.TrimSuffix(output, ".pdf") + ".pdf"
+	err = pdf.WritePdf(output)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Generated %s\n", output)
+
+	return nil
 }
 
 func main() {
