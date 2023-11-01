@@ -1,10 +1,9 @@
-package main
+package invoiceservice
 
 import (
 	_ "embed"
 	"flag"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -174,10 +173,10 @@ func GenerateInvoice(file Invoice) (err error) {
 	return nil
 }
 
-func main() {
-	rootCmd.AddCommand(generateCmd)
-	err := rootCmd.Execute()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+// func main() {
+// 	rootCmd.AddCommand(generateCmd)
+// 	err := rootCmd.Execute()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// }

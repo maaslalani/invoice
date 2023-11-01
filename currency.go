@@ -1,4 +1,4 @@
-package main
+package invoiceservice
 
 var currencySymbols = map[string]string{
 	"USD": "$",
