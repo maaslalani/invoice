@@ -1,4 +1,4 @@
-module github.com/J3012B/invoice
+module github.com/maaslalani/invoice
 
 go 1.20
 
