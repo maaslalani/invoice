@@ -31,5 +31,3 @@ require (
 	golang.org/x/text v0.13.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
-
-replace github.com/maaslalani/invoice => github.com/J3012B/invoice feature_expose_go_function
