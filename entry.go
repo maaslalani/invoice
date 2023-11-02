@@ -161,7 +161,7 @@ func GenerateInvoice(file Invoice) (err error) {
 	}
 	var tax float64
 	if file.IncludeTax {
-		tax = subtotal * (1 - (1 / (1 + tax)))
+		tax = subtotal * (1 - (1 / (1 + file.Tax)))
 	} else {
 		tax = subtotal * file.Tax
 	}
