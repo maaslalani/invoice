@@ -151,13 +151,13 @@ func GenerateInvoice(file Invoice) (err error) {
 			r = file.Rates[i]
 		}
 
-		writeRow(&pdf, file.Items[i], q, r)
+		writeRow(&pdf, file.Items[i], q, r, file.Currency)
 		subtotal += float64(q) * r
 	}
 	if file.Note != "" {
 		writeNotes(&pdf, file.Note)
 	}
-	writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
+	writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount, file.Currency)
 	if file.Due != "" {
 		writeDueDate(&pdf, file.Due)
 	}
