@@ -1,4 +1,4 @@
-package main
+package invoiceservice
 
 import (
 	"encoding/json"
