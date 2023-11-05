@@ -17,10 +17,10 @@ const (
 )
 
 const (
-	subtotalLabel = "Subtotal"
-	discountLabel = "Discount"
-	taxLabel      = "Tax"
-	totalLabel    = "Total"
+	subtotalLabel = "Zwischensumme"  // subtotalLabel = "Subtotal"
+	discountLabel = "Ermäßigung"     // discountLabel = "Discount"
+	taxLabel      = "Inkl. 20% Ust." // taxLabel      = "Tax"
+	totalLabel    = "Gesamtbetrag"   // totalLabel    = "Total"
 )
 
 func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
@@ -59,8 +59,8 @@ func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
 func writeDueDate(pdf *gopdf.GoPdf, due string) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(75, 75, 75)
-	pdf.SetX(rateColumnOffset)
-	_ = pdf.Cell(nil, "Due Date")
+	pdf.SetX(rateColumnOffset - 30)
+	_ = pdf.Cell(nil, "Fällig am") // Due Date
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.SetFontSize(11)
 	pdf.SetX(amountColumnOffset - 15)
@@ -69,6 +69,9 @@ func writeDueDate(pdf *gopdf.GoPdf, due string) {
 }
 
 func writeBillTo(pdf *gopdf.GoPdf, to string) {
+	if to == "" {
+		return
+	}
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 9)
 	_ = pdf.Cell(nil, "BILL TO")
@@ -82,13 +85,13 @@ func writeBillTo(pdf *gopdf.GoPdf, to string) {
 func writeHeaderRow(pdf *gopdf.GoPdf) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(55, 55, 55)
-	_ = pdf.Cell(nil, "ITEM")
+	_ = pdf.Cell(nil, "BESCHREIBUNG") // _ = pdf.Cell(nil, "ITEM")
 	pdf.SetX(quantityColumnOffset)
-	_ = pdf.Cell(nil, "QTY")
+	_ = pdf.Cell(nil, "MENGE") // _ = pdf.Cell(nil, "QTY")
 	pdf.SetX(rateColumnOffset)
-	_ = pdf.Cell(nil, "RATE")
+	_ = pdf.Cell(nil, "PREIS") // _ = pdf.Cell(nil, "RATE")
 	pdf.SetX(amountColumnOffset)
-	_ = pdf.Cell(nil, "AMOUNT")
+	_ = pdf.Cell(nil, "BETRAG") // _ = pdf.Cell(nil, "AMOUNT")
 	pdf.Br(24)
 }
 
@@ -97,13 +100,13 @@ func writeNotes(pdf *gopdf.GoPdf, notes string) {
 
 	_ = pdf.SetFont("Inter", "", 10)
 	pdf.SetTextColor(55, 55, 55)
-	_ = pdf.Cell(nil, "Notes")
+	_ = pdf.Cell(nil, "Ausgestellt von:")
 	pdf.Br(18)
 	_ = pdf.SetFont("Inter", "", 8)
 	pdf.SetTextColor(0, 0, 0)
 
 	formattedNotes := strings.ReplaceAll(notes, `\n`, "\n")
-	notesLines := strings.Split(formattedNotes, "\\n")
+	notesLines := strings.Split(formattedNotes, "\n")
 
 	for i := 0; i < len(notesLines); i++ {
 		_ = pdf.Cell(nil, notesLines[i])
@@ -160,7 +163,7 @@ func writeTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, includeTax boo
 func writeTotal(pdf *gopdf.GoPdf, label string, total float64, currency string) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(75, 75, 75)
-	pdf.SetX(rateColumnOffset)
+	pdf.SetX(rateColumnOffset - 30)
 	_ = pdf.Cell(nil, label)
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.SetFontSize(12)
