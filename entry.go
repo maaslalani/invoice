@@ -2,14 +2,12 @@ package invoiceservice
 
 import (
 	_ "embed"
-	"flag"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/signintech/gopdf"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 //go:embed "Inter/Inter Variable/Inter.ttf"
@@ -64,33 +62,6 @@ var (
 	file           = Invoice{}
 	defaultInvoice = DefaultInvoice()
 )
-
-func init() {
-	viper.AutomaticEnv()
-
-	generateCmd.Flags().StringVar(&importPath, "import", "", "Imported file (.json/.yaml)")
-	generateCmd.Flags().StringVar(&file.Id, "id", time.Now().Format("20060102"), "ID")
-	generateCmd.Flags().StringVar(&file.Title, "title", "INVOICE", "Title")
-
-	generateCmd.Flags().Float64SliceVarP(&file.Rates, "rate", "r", defaultInvoice.Rates, "Rates")
-	generateCmd.Flags().IntSliceVarP(&file.Quantities, "quantity", "q", defaultInvoice.Quantities, "Quantities")
-	generateCmd.Flags().StringSliceVarP(&file.Items, "item", "i", defaultInvoice.Items, "Items")
-
-	generateCmd.Flags().StringVarP(&file.Logo, "logo", "l", defaultInvoice.Logo, "Company logo")
-	generateCmd.Flags().StringVarP(&file.From, "from", "f", defaultInvoice.From, "Issuing company")
-	generateCmd.Flags().StringVarP(&file.To, "to", "t", defaultInvoice.To, "Recipient company")
-	generateCmd.Flags().StringVar(&file.Date, "date", defaultInvoice.Date, "Date")
-	generateCmd.Flags().StringVar(&file.Due, "due", defaultInvoice.Due, "Payment due date")
-
-	generateCmd.Flags().Float64Var(&file.Tax, "tax", defaultInvoice.Tax, "Tax")
-	generateCmd.Flags().Float64VarP(&file.Discount, "discount", "d", defaultInvoice.Discount, "Discount")
-	generateCmd.Flags().StringVarP(&file.Currency, "currency", "c", defaultInvoice.Currency, "Currency")
-
-	generateCmd.Flags().StringVarP(&file.Note, "note", "n", "", "Note")
-	generateCmd.Flags().StringVarP(&output, "output", "o", "invoice.pdf", "Output file (.pdf)")
-
-	flag.Parse()
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "invoice",
