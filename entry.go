@@ -3,6 +3,7 @@ package invoiceservice
 import (
 	_ "embed"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -69,29 +70,29 @@ var rootCmd = &cobra.Command{
 	Long:  `Invoice generates invoices from the command line.`,
 }
 
-var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "Generate an invoice",
-	Long:  `Generate an invoice`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// Read CLI params / JSON config into 'file'
-		if importPath != "" {
-			err := importData(importPath, &file, cmd.Flags())
-			if err != nil {
-				return err
-			}
-		}
+// var generateCmd = &cobra.Command{
+// 	Use:   "generate",
+// 	Short: "Generate an invoice",
+// 	Long:  `Generate an invoice`,
+// 	RunE: func(cmd *cobra.Command, args []string) error {
+// 		// Read CLI params / JSON config into 'file'
+// 		if importPath != "" {
+// 			err := importData(importPath, &file, cmd.Flags())
+// 			if err != nil {
+// 				return err
+// 			}
+// 		}
 
-		err := GenerateInvoice(file)
-		if err != nil {
-			return err
-		}
+// 		err := GenerateInvoice(file)
+// 		if err != nil {
+// 			return err
+// 		}
 
-		return nil
-	},
-}
+// 		return nil
+// 	},
+// }
 
-func GenerateInvoice(file Invoice) (err error) {
+func GenerateInvoice(file Invoice, outputWriter io.Writer) (err error) {
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{
 		PageSize: *gopdf.PageSizeA4,
@@ -141,10 +142,19 @@ func GenerateInvoice(file Invoice) (err error) {
 		writeDueDate(&pdf, file.Due)
 	}
 	writeFooter(&pdf, file.Id)
-	output = strings.TrimSuffix(output, ".pdf") + ".pdf"
-	err = pdf.WritePdf(output)
-	if err != nil {
-		return err
+
+	// Write either to io.Writer or file system based on whether a writer was provided
+	if outputWriter != nil {
+		_, err = pdf.WriteTo(outputWriter)
+		if err != nil {
+			return err
+		}
+	} else {
+		output = strings.TrimSuffix(output, ".pdf") + ".pdf"
+		err = pdf.WritePdf(output)
+		if err != nil {
+			return err
+		}
 	}
 
 	fmt.Printf("Generated %s\n", output)
