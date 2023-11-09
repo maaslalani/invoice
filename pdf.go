@@ -40,7 +40,7 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	pdf.Br(36)
 }
 
-func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
+func writeTitle(pdf *gopdf.GoPdf, title, id, date string, performanceDate string, localizationService LocalizationService) {
 	_ = pdf.SetFont("Inter-Bold", "", 24)
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.Cell(nil, title)
@@ -53,14 +53,16 @@ func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
 	_ = pdf.Cell(nil, "  ·  ")
 	pdf.SetTextColor(100, 100, 100)
 	_ = pdf.Cell(nil, date)
+	pdf.SetX(rateColumnOffset - 15)
+	_ = pdf.Cell(nil, fmt.Sprintf("%s %s", localizationService.serviceDate(), performanceDate))
 	pdf.Br(48)
 }
 
-func writeDueDate(pdf *gopdf.GoPdf, due string) {
+func writeDueDate(pdf *gopdf.GoPdf, due string, l LocalizationService) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset - 30)
-	_ = pdf.Cell(nil, "Fällig am") // Due Date
+	_ = pdf.Cell(nil, l.dueDate())
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.SetFontSize(11)
 	pdf.SetX(amountColumnOffset - 15)
@@ -68,39 +70,66 @@ func writeDueDate(pdf *gopdf.GoPdf, due string) {
 	pdf.Br(12)
 }
 
-func writeBillTo(pdf *gopdf.GoPdf, to string) {
+func writeBillTo(pdf *gopdf.GoPdf, to string, localizationService LocalizationService) {
 	if to == "" {
 		return
 	}
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 9)
-	_ = pdf.Cell(nil, "BILL TO")
+	_ = pdf.Cell(nil, localizationService.billTo())
 	pdf.Br(18)
-	pdf.SetTextColor(75, 75, 75)
-	_ = pdf.SetFont("Inter", "", 15)
-	_ = pdf.Cell(nil, to)
+	_ = pdf.SetFont("Inter", "", 8)
+	pdf.SetTextColor(0, 0, 0)
+
+	formattedTo := strings.ReplaceAll(to, `\n`, "\n")
+	toLines := strings.Split(formattedTo, "\n")
+
+	for i := 0; i < len(toLines); i++ {
+		_ = pdf.Cell(nil, toLines[i])
+		pdf.Br(15)
+	}
+
 	pdf.Br(64)
 }
 
-func writeHeaderRow(pdf *gopdf.GoPdf) {
+func writeHeaderRow(pdf *gopdf.GoPdf, l LocalizationService) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(55, 55, 55)
-	_ = pdf.Cell(nil, "BESCHREIBUNG") // _ = pdf.Cell(nil, "ITEM")
+	_ = pdf.Cell(nil, l.item())
 	pdf.SetX(quantityColumnOffset)
-	_ = pdf.Cell(nil, "MENGE") // _ = pdf.Cell(nil, "QTY")
+	_ = pdf.Cell(nil, l.qty())
 	pdf.SetX(rateColumnOffset)
-	_ = pdf.Cell(nil, "PREIS") // _ = pdf.Cell(nil, "RATE")
+	_ = pdf.Cell(nil, l.rate())
 	pdf.SetX(amountColumnOffset)
-	_ = pdf.Cell(nil, "BETRAG") // _ = pdf.Cell(nil, "AMOUNT")
+	_ = pdf.Cell(nil, l.amount())
 	pdf.Br(24)
 }
 
-func writeNotes(pdf *gopdf.GoPdf, notes string) {
+func writeComment(pdf *gopdf.GoPdf, comment string, l LocalizationService) {
+	pdf.SetY(550)
+
+	_ = pdf.SetFont("Inter", "", 10)
+	pdf.SetTextColor(55, 55, 55)
+	_ = pdf.Cell(nil, fmt.Sprintf("%s:", l.note()))
+	pdf.Br(18)
+	_ = pdf.SetFont("Inter", "", 8)
+	pdf.SetTextColor(0, 0, 0)
+
+	formattedNotes := strings.ReplaceAll(comment, `\n`, "\n")
+	notesLines := strings.Split(formattedNotes, "\n")
+
+	for i := 0; i < len(notesLines); i++ {
+		_ = pdf.Cell(nil, notesLines[i])
+		pdf.Br(15)
+	}
+}
+
+func writeNotes(pdf *gopdf.GoPdf, notes string, l LocalizationService) {
 	pdf.SetY(650)
 
 	_ = pdf.SetFont("Inter", "", 10)
 	pdf.SetTextColor(55, 55, 55)
-	_ = pdf.Cell(nil, "Ausgestellt von:")
+	_ = pdf.Cell(nil, l.from())
 	pdf.Br(18)
 	_ = pdf.SetFont("Inter", "", 8)
 	pdf.SetTextColor(0, 0, 0)
@@ -143,21 +172,21 @@ func writeRow(pdf *gopdf.GoPdf, item string, quantity int, rate float64, currenc
 	pdf.Br(24)
 }
 
-func writeTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, includeTax bool, discount float64, currency string) {
+func writeTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, includeTax bool, discount float64, currency string, l LocalizationService) {
 	pdf.SetY(650)
 
-	writeTotal(pdf, subtotalLabel, subtotal, currency)
+	writeTotal(pdf, l.subtotal(), subtotal, currency)
 	if tax > 0 {
-		writeTotal(pdf, taxLabel, tax, currency)
+		writeTotal(pdf, l.taxLabelATInclVat(), tax, currency)
 	}
 	if discount > 0 {
-		writeTotal(pdf, discountLabel, discount, currency)
+		writeTotal(pdf, l.discount(), discount, currency)
 	}
 	var total float64 = subtotal - discount
 	if !includeTax {
 		total = total + tax
 	}
-	writeTotal(pdf, totalLabel, total, currency)
+	writeTotal(pdf, l.total(), total, currency)
 }
 
 func writeTotal(pdf *gopdf.GoPdf, label string, total float64, currency string) {
