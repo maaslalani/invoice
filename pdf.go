@@ -31,12 +31,25 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 		_ = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
 		pdf.Br(scaledHeight + 24)
 	}
-	_ = pdf.SetFont("Inter", "", 12)
 	pdf.SetTextColor(55, 55, 55)
-	_ = pdf.Cell(nil, from)
-	pdf.Br(36)
+
+	formattedFrom := strings.ReplaceAll(from, `\n`, "\n")
+	fromLines := strings.Split(formattedFrom, "\n")
+
+	for i := 0; i < len(fromLines); i++ {
+		if i == 0 {
+			_ = pdf.SetFont("Inter", "", 12)
+			_ = pdf.Cell(nil, fromLines[i])
+			pdf.Br(18)
+		} else {
+			_ = pdf.SetFont("Inter", "", 10)
+			_ = pdf.Cell(nil, fromLines[i])
+			pdf.Br(15)
+		}
+	}
+	pdf.Br(21)
 	pdf.SetStrokeColor(225, 225, 225)
-	pdf.Line(pdf.GetX(), pdf.GetY(), 100, pdf.GetY())
+	pdf.Line(pdf.GetX(), pdf.GetY(), 260, pdf.GetY())
 	pdf.Br(36)
 }
 
@@ -74,8 +87,21 @@ func writeBillTo(pdf *gopdf.GoPdf, to string) {
 	_ = pdf.Cell(nil, "BILL TO")
 	pdf.Br(18)
 	pdf.SetTextColor(75, 75, 75)
-	_ = pdf.SetFont("Inter", "", 15)
-	_ = pdf.Cell(nil, to)
+
+	formattedTo := strings.ReplaceAll(to, `\n`, "\n")
+	toLines := strings.Split(formattedTo, "\n")
+
+	for i := 0; i < len(toLines); i++ {
+		if i == 0 {
+			_ = pdf.SetFont("Inter", "", 15)
+			_ = pdf.Cell(nil, toLines[i])
+			pdf.Br(20)
+		} else {
+			_ = pdf.SetFont("Inter", "", 10)
+			_ = pdf.Cell(nil, toLines[i])
+			pdf.Br(15)
+		}
+	}
 	pdf.Br(64)
 }
 
@@ -93,17 +119,17 @@ func writeHeaderRow(pdf *gopdf.GoPdf) {
 }
 
 func writeNotes(pdf *gopdf.GoPdf, notes string) {
-	pdf.SetY(650)
+	pdf.SetY(600)
 
-	_ = pdf.SetFont("Inter", "", 10)
+	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(55, 55, 55)
-	_ = pdf.Cell(nil, "Notes")
+	_ = pdf.Cell(nil, "NOTES")
 	pdf.Br(18)
-	_ = pdf.SetFont("Inter", "", 8)
+	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(0, 0, 0)
 
 	formattedNotes := strings.ReplaceAll(notes, `\n`, "\n")
-	notesLines := strings.Split(formattedNotes, "\\n")
+	notesLines := strings.Split(formattedNotes, "\n")
 
 	for i := 0; i < len(notesLines); i++ {
 		_ = pdf.Cell(nil, notesLines[i])
@@ -141,7 +167,7 @@ func writeRow(pdf *gopdf.GoPdf, item string, quantity int, rate float64) {
 }
 
 func writeTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, discount float64) {
-	pdf.SetY(650)
+	pdf.SetY(600)
 
 	writeTotal(pdf, subtotalLabel, subtotal)
 	if tax > 0 {
