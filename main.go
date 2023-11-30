@@ -60,6 +60,7 @@ func DefaultInvoice() Invoice {
 var (
 	importPath     string
 	output         string
+    show_ver_only  bool
 	file           = Invoice{}
 	defaultInvoice = DefaultInvoice()
 )
@@ -88,6 +89,8 @@ func init() {
 	generateCmd.Flags().StringVarP(&file.Note, "note", "n", "", "Note")
 	generateCmd.Flags().StringVarP(&output, "output", "o", "invoice.pdf", "Output file (.pdf)")
 
+    versionCmd.Flags().BoolVarP(&show_ver_only, "short", "s", false, "Show version number only")
+
 	flag.Parse()
 }
 
@@ -95,6 +98,20 @@ var rootCmd = &cobra.Command{
 	Use:   "invoice",
 	Short: "Invoice generates invoices from the command line.",
 	Long:  `Invoice generates invoices from the command line.`,
+}
+
+var versionCmd = &cobra.Command{
+    Use:    "version",
+    Short:  "Show version information",
+    Long:   `Show version information`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+        if show_ver_only {
+		    fmt.Printf("%s\n", version)
+        }  else {
+		    fmt.Printf("invoice version %s\n%s\n", version, "(c) by Maas Lalani (https://github.com/maaslalani)")
+        }
+		return nil
+	},
 }
 
 var generateCmd = &cobra.Command{
@@ -166,6 +183,7 @@ var generateCmd = &cobra.Command{
 }
 
 func main() {
+	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(generateCmd)
 	err := rootCmd.Execute()
 	if err != nil {
